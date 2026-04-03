@@ -1,0 +1,52 @@
+# -------------------------------------------------------
+# Source Configuration (Template)
+# -------------------------------------------------------
+# This file defines raw source tables and freshness checks
+#
+# How to use:
+# 1. Replace source name, database, and schema
+# 2. Define all raw tables under this source
+# 3. If ingestion timestamp exists → set loaded_at_field and freshness
+#    If NOT → remove loaded_at_field and set freshness: null
+# 4. Configure freshness thresholds based on SLA
+#
+# Note:
+# - Freshness is required for all non-seed sources
+# - If no ingestion timestamp exists, explicitly disable:
+#     freshness: null
+# -------------------------------------------------------
+
+version: 2
+
+sources:
+  - name: your_source                     # e.g., raw, shopify, stripe, ecommerce
+    database: your_database
+    schema: your_raw_schema
+    description: "Raw data loaded from ingestion systems"
+
+    # -------------------------
+    # Freshness Configuration
+    # -------------------------
+    loaded_at_field: your_ingestion_timestamp    # e.g. _etl_loaded_at, _fivetran_synced, _loaded_at
+    freshness:
+      warn_after:  { count: 12, period: hour }
+      error_after: { count: 24, period: hour }
+
+    # -------------------------
+    # Source Tables
+    # -------------------------
+    tables:
+
+      - name: your_table_1
+        description: "Raw table description"
+        columns:
+          - name: primary_key_column
+            description: "Unique identifier for this table"
+
+      - name: your_table_2
+        description: "Raw table description"
+        columns:
+          - name: primary_key_column
+            description: "Unique identifier for this table"
+          - name: referencing_column
+            description: "References primary_key_column in your_table_1"

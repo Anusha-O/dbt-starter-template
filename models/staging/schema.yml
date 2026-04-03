@@ -1,0 +1,68 @@
+# -------------------------------------------------------
+# Staging Schema Configuration (Template)
+# -------------------------------------------------------
+# This file defines tests and documentation for staging models
+#
+# How to use:
+# 1. Replace model name with your actual staging model
+# 2. Add all columns present in your model
+# 3. Define the primary key column
+# 4. Add tests based on your data quality requirements
+#
+# Note:
+# - Staging is based on raw source data (not fully controlled)
+# - Use 'warn' severity to monitor issues without breaking pipeline
+# -------------------------------------------------------
+
+version: 2
+
+models:
+
+  # -------------------------
+  # Model 1
+  # -------------------------
+  - name: staging_model1
+    description: "Staging model for cleaning and standardizing source data"
+
+    columns:
+      - name: primary_key_column
+        description: "Unique identifier for this model"
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+
+      - name: column_name_1
+        description: "Description of the column"
+
+      - name: column_name_2
+        description: "Description of the column"
+
+        # Example: accepted values test (optional)
+        # tests:
+        #   - accepted_values:
+        #       arguments:
+        #         values: ['value_1', 'value_2']
+        #       severity: warn
+
+  # -------------------------
+  # Model 2 (Duplicate block as needed)
+  # -------------------------
+  - name: staging_model2
+    description: "Staging model for cleaning and standardizing source data"
+
+    columns:
+      - name: primary_key_column
+        description: "Unique identifier for this model"
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+
+      - name: column_name_1
+        description: "Description of the column"
+
+      - name: column_name_2
+        description: "Description of the column"

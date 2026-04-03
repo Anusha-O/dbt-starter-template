@@ -1,0 +1,74 @@
+# -------------------------------------------------------
+# Intermediate Schema Configuration (Template)
+# -------------------------------------------------------
+# File name: schema.yml
+#
+# ⚠️ Optional: Add only if models are complex or shared
+#
+# This file defines tests and documentation for intermediate models
+#
+# How to use:
+# 1. Replace model names with actual intermediate models
+# 2. Add columns based on transformation output
+# 3. Add tests only where meaningful (not mandatory for all columns)
+#
+# Note:
+# - Intermediate layer handles joins, aggregations, and business logic
+# - Not exposed to BI tools (internal transformation layer)
+# - Use 'warn' severity → do not block pipeline
+# - Avoid over-testing (focus on meaningful checks only)
+# - Skip this file entirely if models are simple and not reused
+# -------------------------------------------------------
+
+version: 2
+
+models:
+
+  # -------------------------
+  # Model 1
+  # -------------------------
+  - name: int_your_entity__transformation
+    description: "Intermediate model for transformations and business logic"
+
+    columns:
+
+      - name: primary_key_column
+        description: "Unique identifier for this model"
+
+        # Optional test (use only if meaningful)
+        # tests:
+        #   - not_null:
+        #       severity: warn
+
+      - name: column_name_1
+        description: "Description of the column"
+
+      - name: column_name_2
+        description: "Description of the column"
+
+      - name: derived_column
+        description: "Derived or transformed column"
+
+        # Example: expression test (dbt_utils)
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       arguments:
+        #         expression: ">= 0"
+        #       severity: warn
+
+  # -------------------------
+  # Model 2 (Duplicate block as needed)
+  # -------------------------
+  - name: int_your_entity__transformation_2
+    description: "Intermediate model for transformations and business logic"
+
+    columns:
+
+      - name: primary_key_column
+        description: "Unique identifier for this model"
+
+      - name: column_name_1
+        description: "Description of the column"
+
+      - name: column_name_2
+        description: "Description of the column"

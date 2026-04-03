@@ -1,0 +1,106 @@
+# -------------------------------------------------------
+# dbt Project Configuration File
+# -------------------------------------------------------
+
+name: 'dbt_starter_template'   # Name of the project
+version: '1.0'                 # Project version
+config-version: 2              # dbt config version (keep as 2)
+
+# Profile name → must match profiles.yml
+profile: 'dbt_starter_template'
+
+# -------------------------------------------------------
+# Project Paths (where dbt looks for files)
+# -------------------------------------------------------
+
+model-paths: ["models"]        # SQL models (main transformation logic)
+macro-paths: ["macros"]        # Reusable SQL Logic
+test-paths: ["tests"]          # Custom tests
+seed-paths: ["seeds"]          # CSV files loaded using dbt seed
+analysis-paths: ["analyses"]   # Ad-hoc queries (not part of pipeline)
+snapshot-paths: ["snapshots"]  # For tracking changes over time
+
+# Clean-up configuration
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# -------------------------------------------------------
+# Materialization Strategy (default behavior)
+# -------------------------------------------------------
+# staging → view (lightweight, always fresh)
+# intermediate → view (easy to debug and reuse)
+# marts → table (final data for reporting)
+#
+# Other options:
+# - incremental → for large data (only new data processed)
+# - ephemeral → no table created, used for simple logic
+#
+# You can override inside model using:
+# {{ config(materialized='incremental') }}
+
+# -------------------------------------------------------
+# Model Configuration (applies based on folder)
+# -------------------------------------------------------
+
+models:
+  dbt_starter_template:   # Must match project name
+
+    # Global metadata applied to all models
+    +meta:
+      owner: "data_team"
+      project: "dbt_starter_template"
+
+    # Enables model visibility in dbt docs
+    +docs:
+      show: true
+
+    # -------------------------
+    # Staging Layer
+    # -------------------------
+    staging:
+      +materialized: view      # Creates a view (no data stored, always latest)
+      +schema: staging         # Models will be created in 'staging' schema
+      +tags: ['staging']       # Used for running specific models (e.g., dbt run --select tag:staging)
+
+    # -------------------------
+    # Intermediate Layer
+    # -------------------------
+    intermediate:
+      +materialized: view      # Default → easy debugging and reuse
+      +schema: intermediate
+      +tags: ['intermediate']
+
+      # When to override:
+      # 1. Use 'table' → if model is reused in many places or logic is heavy
+      # 2. Use 'ephemeral' → if logic is simple and used only once
+
+    # -------------------------
+    # Marts Layer (Final Layer)
+    # -------------------------
+    marts:
+      +materialized: table     # Stores data physically for faster queries
+      +schema: marts
+      +tags: ['marts']
+
+      # +partition_by:                  # Uncomment and replace before use
+      #   field: PARTITION_COLUMN
+      #   data_type: timestamp
+      # Note:
+      # - timestamp/date → preferred (event time)
+      # - ingestion_time → only if no reliable timestamp exists
+      # - integer → if no time-based column
+
+      # +cluster_by: ['CLUSTER_COLUMN'] # Uncomment and replace before use
+      # Note:
+      # - frequently filtered columns (e.g., user_id, region)
+      # - use low to medium cardinality columns
+      # - if multiple columns → highest-cardinality first
+
+      # When to override:
+      # 1. Use 'incremental' → for large datasets where full rebuild is expensive
+      #    When using incremental, set on_schema_change:
+      #     -on_schema_change: 'fail'               → safe default
+      #     -on_schema_change: 'append_new_columns' → if schema evolves
+
+  

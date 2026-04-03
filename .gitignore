@@ -1,0 +1,30 @@
+# -------------------------------------------------------
+# dbt .gitignore
+# -------------------------------------------------------
+
+# dbt compiled output — auto generated
+target/
+
+# dbt log files
+logs/
+
+# dbt installed packages — restored via dbt deps
+dbt_packages/
+
+# Environment variables — never commit real values
+.env
+
+# dbt profile — contains connection credentials
+profiles.yml
+
+# Python virtual environments
+venv/
+dbt-env/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/editor settings
+.vscode/
+.idea/
