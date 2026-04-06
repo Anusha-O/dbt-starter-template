@@ -1,0 +1,93 @@
+# -------------------------------------------------------
+# Seed Configuration (Template)
+# -------------------------------------------------------
+# Purpose:
+# Load static reference data into the warehouse
+#
+# When to use seeds:
+# - Small, static reference tables (country codes, categories)
+# - Data that changes rarely and is managed in the repo
+# - NOT for large datasets — use sources instead
+#
+# Commands:
+# dbt seed                  → load seed files only
+# dbt build                 → load seeds + run models + run tests
+#
+# How to use:
+# 1. Replace seed name with actual file name (must match CSV)
+# 2. Define column types explicitly (avoids BigQuery type inference)
+# 3. Add tests where meaningful
+# 4. Remove enabled: false when ready to use
+# -------------------------------------------------------
+
+version: 2
+
+seeds:
+
+  # -------------------------
+  # Seed Template
+  # -------------------------
+  - name: seed_template               # must match CSV filename (seed_template.csv)
+    description: "Describe what this seed contains and why it exists"
+
+    config:
+      schema: seeds                   # lands in dbt_dev.seeds — isolated from models
+      quote_columns: false            # prevents column quoting issues in BigQuery
+      enabled: false                  # remove when ready to use
+
+      # Define column types explicitly
+      # BigQuery types: STRING, INTEGER, FLOAT64, NUMERIC, BOOLEAN, DATE, TIMESTAMP
+      column_types:
+        id: INTEGER
+        name: STRING
+        category: STRING
+
+    columns:
+      - name: id
+        description: "Unique identifier"
+        tests:
+          - not_null:
+              severity: error         # static data — should never have nulls
+          - unique:
+              severity: error         # static data — should never have duplicates
+
+      - name: name
+        description: "Entity name"
+        tests:
+          - not_null:
+              severity: error
+
+      - name: category
+        description: "Category label"
+        # Optional tests:
+        # tests:
+        #   - accepted_values:
+        #       values: ['value_1', 'value_2']
+        #       severity: error
+
+  # -------------------------
+  # Seed 2 (Duplicate block as needed)
+  # -------------------------
+  - name: seed_template_2             # must match CSV filename
+    description: "Describe what this seed contains and why it exists"
+
+    config:
+      schema: seeds
+      quote_columns: false
+      enabled: false
+
+      column_types:
+        id: INTEGER
+        name: STRING
+
+    columns:
+      - name: id
+        description: "Unique identifier"
+        tests:
+          - not_null:
+              severity: error
+          - unique:
+              severity: error
+
+      - name: name
+        description: "Entity name"

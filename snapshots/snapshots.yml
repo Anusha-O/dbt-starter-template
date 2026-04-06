@@ -1,0 +1,78 @@
+# -------------------------------------------------------
+# Snapshot Configuration (Template)
+# -------------------------------------------------------
+#-- Naming convention: <entity>_snapshot.yml
+#-- Example: orders_snapshot.yml
+# Purpose:
+# Track historical changes to source data (SCD Type 2)
+# How to use:
+# 1. Duplicate the template block
+# 2. Rename snapshot
+# 3. Update relation, unique_key, and updated_at
+# 4. Set enabled: true
+# 5. Run: dbt snapshot
+# Note:
+# relation: supported in newer dbt versions (v1.5+)
+# - For older versions use SQL-based snapshot instead
+# -------------------------------------------------------
+
+version: 2
+
+snapshots:
+
+  # -------------------------------------------------------
+  # TEMPLATE SNAPSHOT (DISABLED BY DEFAULT)
+  # -------------------------------------------------------
+  # Duplicate this block and modify as needed
+  # -------------------------------------------------------
+  - name: snapshot_template
+    description: "Template snapshot — duplicate and modify as needed"
+
+   # For older versions use SQL-based snapshot instead
+    relation: source('raw', 'your_table')
+
+    config:
+      schema: snapshots
+      unique_key: id
+      enabled: false           # Set to true to activate snapshot
+
+      # -------------------------
+      # Strategy Options
+      # -------------------------
+       # Option 1: Timestamp (recommended)
+      strategy: timestamp
+      updated_at: updated_at     # Column that indicates last update time
+     
+      # Option 2: Check (for databases without good timestamp support)      
+      # Required if using check strategy:
+      # strategy: check
+      # check_cols: all # Compares all columns for changes (can be slow for wide tables)
+      # OR
+      # check_cols: ['column1', 'column2'] # Only checks specified columns for changes (faster)
+      
+      # -------------------------
+      # Optional Settings
+      # -------------------------
+      
+      # Replaces NULL in dbt_valid_to for active records
+      # Makes filtering easier:
+      # WHERE dbt_valid_to = timestamp('9999-12-31')
+      # dbt_valid_to_current: "timestamp('9999-12-31 00:00:00')"
+
+      # Controls behaviour when source rows are deleted:
+      # hard_deletes: ignore       → default, deleted rows stay active
+      # hard_deletes: invalidate   → sets dbt_valid_to on deleted rows
+      # hard_deletes: new_record   → adds new row with deleted=true
+      # hard_deletes: invalidate
+
+    columns:
+      - name: dbt_ valid_from
+        description: "Start timestamp of record validity"
+      - name: dbt_valid_to
+        description: "End timestamp (NULL or 9999-12-31 = active record)"
+      - name: dbt_updated_at
+        description: "Timestamp when snapshot record was last updated"
+      - name: dbt_scd_id
+        description: "Unique snapshot record identifier"
+
+  
