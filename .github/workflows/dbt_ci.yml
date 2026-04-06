@@ -1,0 +1,180 @@
+name: dbt CI Pipeline
+
+on:
+  pull_request:
+    branches: [dev]
+  push:
+    branches: [main]
+
+jobs:
+  dbt-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # -------------------------
+      # Checkout code
+      # -------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -------------------------
+      # Setup Python
+      # -------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # -------------------------
+      # Install dbt and SQLFluff
+      # -------------------------
+      - name: Install dbt and SQLFluff
+        run: |
+          pip install dbt-bigquery==1.8.0
+          pip install sqlfluff sqlfluff-templater-dbt
+
+      # -------------------------
+      # Authenticate to GCP
+      # -------------------------
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.DBT_KEYFILE_JSON }}
+
+      # -------------------------
+      # Set up Google Cloud SDK
+      # -------------------------
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.DBT_GCP_PROJECT_QA }}
+
+      # -------------------------
+      # Setup BigQuery credentials
+      # -------------------------
+      - name: Setup BigQuery credentials
+        run: |
+          echo '${{ secrets.DBT_KEYFILE_JSON }}' > /tmp/keyfile.json
+          echo "DBT_KEYFILE_QA=/tmp/keyfile.json" >> $GITHUB_ENV
+          echo "DBT_KEYFILE_PROD=/tmp/keyfile.json" >> $GITHUB_ENV
+
+      # -------------------------
+      # Setup dbt profiles
+      # -------------------------
+      - name: Setup dbt profiles
+        run: |
+          mkdir -p ~/.dbt
+          cp profiles.yml ~/.dbt/profiles.yml
+
+      # -------------------------
+      # Set environment variables
+      # -------------------------
+      - name: Set environment variables
+        run: |
+          echo "DBT_TARGET=qa" >> $GITHUB_ENV
+          echo "DBT_DATASET=dbt_ci" >> $GITHUB_ENV
+          echo "DBT_GCP_PROJECT_QA=${{ secrets.DBT_GCP_PROJECT_QA }}" >> $GITHUB_ENV
+          echo "DBT_GCP_PROJECT_PROD=${{ secrets.DBT_GCP_PROJECT_PROD }}" >> $GITHUB_ENV
+          echo "DBT_THREADS_QA=4" >> $GITHUB_ENV
+          echo "DBT_THREADS_PROD=8" >> $GITHUB_ENV
+
+      # -------------------------
+      # Install dbt packages
+      # -------------------------
+      - name: Install dbt packages
+        run: dbt deps
+
+      # -------------------------
+      # Lint SQL with SQLFluff
+      # -------------------------
+      - name: Lint SQL with SQLFluff
+        run: |
+          sqlfluff lint models/ \
+            --dialect bigquery \
+            --templater dbt \
+            --rules L036,L010,L014
+        # L036 → no SELECT *
+        # L010 → consistent keyword casing
+        # L014 → snake_case column names
+
+      # -------------------------
+      # Debug dbt connection
+      # -------------------------
+      - name: Debug dbt connection
+        run: dbt debug --target qa
+
+      # -------------------------
+      # Create target folder
+      # -------------------------
+      - name: Create target folder
+        run: mkdir -p target
+
+      # -------------------------
+      # Download production manifest (slim CI)
+      # -------------------------
+      - name: Download production manifest
+        if: github.event_name == 'pull_request'
+        run: |
+          gsutil cp \
+            gs://${{ secrets.DBT_MANIFEST_BUCKET }}/manifest.json \
+            target/manifest.json
+        continue-on-error: true   # first run — no manifest exists yet
+
+      # -------------------------
+      # Check source freshness
+      # -------------------------
+      - name: Check source freshness
+        run: dbt source freshness --target qa
+
+      # -------------------------
+      # Run dbt Project Evaluator
+      # -------------------------
+      - name: Run dbt Project Evaluator
+        run: |
+          dbt build \
+            --select package:dbt_project_evaluator \
+            --target qa
+
+      # -------------------------
+      # Slim CI (PR only)
+      # -------------------------
+      - name: Run Slim CI
+        if: github.event_name == 'pull_request'
+        run: |
+          dbt build \
+            --select source_status:fresher+ state:modified+ \
+            --defer \
+            --state target/ \
+            --target qa
+
+      # -------------------------
+      # Full build (merge to main)
+      # -------------------------
+      - name: Run Full Build
+        if: github.event_name == 'push' && success()
+        run: |
+          dbt source freshness --target prod
+          dbt build \
+            --select source_status:fresher+ \
+            --target prod
+
+      # -------------------------
+      # Upload manifest to GCS
+      # -------------------------
+      - name: Upload manifest to GCS
+        if: github.event_name == 'push'
+        run: |
+          gsutil cp \
+            target/manifest.json \
+            gs://${{ secrets.DBT_MANIFEST_BUCKET }}/manifest.json
+
+      # -------------------------
+      # Cleanup CI dataset
+      # -------------------------
+      - name: Cleanup CI dataset
+        if: always()
+        run: |
+          bq rm -r -f \
+            ${{ secrets.DBT_GCP_PROJECT_QA }}:dbt_ci_qa* || true
+            

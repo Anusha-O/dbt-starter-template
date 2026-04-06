@@ -6,7 +6,10 @@ packages:
   - package: calogica/dbt_expectations
     version: ">=0.10.0"
       # Provides data quality tests (like not null, valid values)
-  # Custom reusable macro package
-  - local: dbt_macro_utils
+  
+  - local: dbt_macro_utils # Custom reusable macro package
+  - package: dbt-labs/dbt_project_evaluator
+    version: ">=0.8.0"
+    # Provides macros for testing and debugging dbt projects
 # Run this command after adding packages:
 # dbt deps
