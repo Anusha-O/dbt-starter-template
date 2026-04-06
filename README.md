@@ -49,7 +49,6 @@ analyses/
 dbt_project.yml
 packages.yml
 profiles.yml
-.env
 .env.example
 .gitignore
 .sqlfluff
