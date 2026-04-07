@@ -12,10 +12,7 @@ logs/
 dbt_packages/
 
 # Environment variables — never commit real values
-.env
-
-# dbt profile — contains connection credentials
-profiles.yml
+.env.local
 
 # Python virtual environments
 venv/

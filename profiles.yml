@@ -1,0 +1,102 @@
+# -------------------------------------------------------
+# dbt Profile Configuration (Template)
+# -------------------------------------------------------
+# File name: profiles.yml
+# File location: ~/.dbt/profiles.yml
+# Purpose:Central configuration for dbt connections across environments
+# Environments:
+# - dev  → development (default)
+# - qa   → testing / validation
+# - prod → production
+# Usage:
+# dbt run --target dev
+# dbt run --target qa
+# dbt run --target prod
+# Validation Tip:
+# Run `dbt debug --target dev` to verify connection and environment variables
+# ⚠️ WARNING:
+# - Never commit this file to version control
+# - Add profiles.yml to .gitignore
+# - All sensitive values must use env_var()
+#
+# Note:
+# - env_var() works natively in profiles.yml (dbt Core + dbt Cloud)
+# - var() does NOT work in profiles.yml → use env_var() only
+# - keyfile env vars have no fallback → must be set explicitly
+# - DBT_TARGET has a fallback of 'dev' → safe for local development
+#
+# Required environment variables:
+# - DBT_TARGET              → active target (default: dev)
+# - DBT_DATASET             → base dataset name (suffix _dev/_qa/_prod will be added)
+# - DBT_GCP_PROJECT_DEV     → GCP project ID for dev
+# - DBT_GCP_PROJECT_QA      → GCP project ID for qa
+# - DBT_GCP_PROJECT_PROD    → GCP project ID for prod
+# - DBT_KEYFILE_DEV         → service account JSON path for dev
+# - DBT_KEYFILE_QA          → service account JSON path for qa
+# - DBT_KEYFILE_PROD        → service account JSON path for prod
+# - DBT_THREADS_DEV         → parallel threads for dev (default: 4)
+# - DBT_THREADS_QA          → parallel threads for qa (default: 4)
+# - DBT_THREADS_PROD        → parallel threads for prod (default: 8)
+# -------------------------------------------------------
+# -------------------------------------------------------
+# Key Design Principles
+# -------------------------------------------------------
+# - Same codebase runs across all environments
+# - Only project, dataset, and credentials differ
+# - dev  → interactive priority, lower threads, shorter timeout
+# - qa   → mirrors prod settings for accurate validation
+# - prod → batch priority, higher threads, longer timeout
+# - All sensitive values use env_var() — never hardcode
+# - DBT_DATASET suffix pattern (_dev/_qa/_prod) keeps
+#   naming consistent across environments
+# - Separate thread env vars per environment prevents
+#   accidental under-provisioning in prod
+# -------------------------------------------------------
+
+dbt_starter_template:                              # must match name in dbt_project.yml
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"    # default: dev — override via CI/CD
+
+  outputs:
+
+    # ---------------------------
+    # DEV ENVIRONMENT
+    # ---------------------------
+    dev:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('DBT_GCP_PROJECT_DEV') }}"
+      dataset: "{{ env_var('DBT_DATASET') }}_dev_{{ env_var('USER', env_var('USERNAME')) | lower }}"  # dataset with user suffix for isolation
+      keyfile: "{{ env_var('DBT_KEYFILE_DEV') }}"
+      threads: "{{ env_var('DBT_THREADS_DEV', 4) | int }}"
+      timeout_seconds: 300
+      location: US                                 # override: env_var('DBT_LOCATION', 'US')
+      priority: interactive
+
+    # ---------------------------
+    # QA ENVIRONMENT
+    # ---------------------------
+    qa:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('DBT_GCP_PROJECT_QA') }}"
+      dataset: "{{ env_var('DBT_DATASET') }}_qa"
+      keyfile: "{{ env_var('DBT_KEYFILE_QA') }}"
+      threads: "{{ env_var('DBT_THREADS_QA', 4) | int }}"
+      timeout_seconds: 300
+      location: US                                 # override: env_var('DBT_LOCATION', 'US')
+      priority: interactive
+
+    # ---------------------------
+    # PROD ENVIRONMENT
+    # ---------------------------
+    prod:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('DBT_GCP_PROJECT_PROD') }}"
+      dataset: "{{ env_var('DBT_DATASET') }}_prod"
+      keyfile: "{{ env_var('DBT_KEYFILE_PROD') }}"
+      threads: "{{ env_var('DBT_THREADS_PROD', 8) | int }}"
+      timeout_seconds: 600
+      location: US                                 # override: env_var('DBT_LOCATION', 'US')
+      priority: batch                              # cost-optimized for production
+
