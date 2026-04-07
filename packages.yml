@@ -3,7 +3,7 @@ packages:
     version: ">=1.0.0"
     # Provides useful helper macros (like surrogate keys, unions)
 
-  - package: calogica/dbt_expectations
+  - package: metaplane/dbt_expectations
     version: ">=0.10.0"
       # Provides data quality tests (like not null, valid values)
   

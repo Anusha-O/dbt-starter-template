@@ -9,7 +9,7 @@
 -- Grain:
 -- One row per customer
 ---------------------------------------------------------
-
+{{ config(enabled=false) }}
 SELECT
    
     customer_id,
