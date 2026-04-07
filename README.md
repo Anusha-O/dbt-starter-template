@@ -61,6 +61,16 @@ profiles.yml
 - Python 3.8 or higher
 - dbt with BigQuery adapter
 - Google Cloud service account with BigQuery access
+**Create and activate virtual environment:**
+```bash
+# Mac/Linux
+python -m venv dbt-env
+source dbt-env/bin/activate
+
+# Windows
+python -m venv dbt-env
+dbt-env\Scripts\activate
+```
 
 Install dbt:
 ```bash
@@ -79,12 +89,14 @@ cd <project-folder>
 
 **2. Configure environment variables**
 ```bash
-# copy example file and fill in real values
-   cp .env.example .env.local   (Mac/Linux)
-   copy .env.example .env.local (Windows)
- Update `.env.local` with your credentials
+#Step1 copy example file and fill in real values
+   cp .env.example .env  (Mac/Linux)
+   copy .env.example .env (Windows)
+# Step2 Update `.env` with your credentials
+# Step 3 — once filled in, load the variables
+. .\load_env.ps1
 ```
-Do NOT commit `.env.local` (it contains sensitive information)
+Do NOT commit `.env` (it contains sensitive information)
 ## Environment Variables
 
 All sensitive values are managed via environment variables.
