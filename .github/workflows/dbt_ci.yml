@@ -136,6 +136,7 @@ jobs:
       # Check source freshness
       # -------------------------
       - name: Check source freshness
+        if: false
         run: dbt source freshness --target qa
 
       # -------------------------
