@@ -166,10 +166,7 @@ jobs:
       - name: Run Full Build
         if: github.event_name == 'push' && success()
         run: |
-          dbt source freshness --target prod
-          dbt build \
-            --select source_status:fresher+ \
-            --target prod
+          dbt build --target prod
 
       # -------------------------
       # Upload manifest to GCS
