@@ -80,11 +80,11 @@ cd <project-folder>
 **2. Configure environment variables**
 ```bash
 # copy example file and fill in real values
-cp .env .env.local
-# open .env.local and replace all placeholder values
-# then export:
-source .env.local
+   cp .env.example .env.local   (Mac/Linux)
+   copy .env.example .env.local (Windows)
+ Update `.env.local` with your credentials
 ```
+Do NOT commit `.env.local` (it contains sensitive information)
 ## Environment Variables
 
 All sensitive values are managed via environment variables.
