@@ -11,7 +11,7 @@
 -- Grain:
 -- One row per order
 -- -------------------------------------------------------
-
+{{ config(enabled=false) }}
 WITH base AS (
 
     -- Select only required columns from intermediate model
