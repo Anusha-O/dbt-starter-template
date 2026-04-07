@@ -11,7 +11,7 @@
 -- Grain:
 -- One row per customer
 -- -------------------------------------------------------
-
+{{ config(enabled=false) }}
 WITH base AS (
 
     -- Select required columns (directly from staging — no intermediate needed for simple dimensions)
