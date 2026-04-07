@@ -102,7 +102,7 @@ jobs:
       # Debug dbt connection
       # -------------------------
       - name: Debug dbt connection
-        run: dbt debug --target qa
+        run: dbt debug --target dev
 
       # -------------------------
       # Create target folder
