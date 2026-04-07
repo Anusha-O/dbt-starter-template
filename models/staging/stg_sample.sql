@@ -1,4 +1,4 @@
 SELECT
   id,
   name
-FROM {{ ref('sample_data') }}
+FROM {{ ref('sample_seed') }}
