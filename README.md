@@ -1,4 +1,5 @@
 # dbt Starter Template (BigQuery)
+# Final CI validation
 # testing pr
 ## Overview
 This repository provides a standardized dbt project template for building

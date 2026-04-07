@@ -74,8 +74,19 @@ jobs:
         run: |
           echo "DBT_TARGET=qa" >> $GITHUB_ENV
           echo "DBT_DATASET=dbt_ci" >> $GITHUB_ENV
+
+          
+          echo "DBT_GCP_PROJECT_DEV=${{ secrets.DBT_GCP_PROJECT_QA }}" >> $GITHUB_ENV
+          echo "DBT_KEYFILE_DEV=/tmp/keyfile.json" >> $GITHUB_ENV
+
+         
           echo "DBT_GCP_PROJECT_QA=${{ secrets.DBT_GCP_PROJECT_QA }}" >> $GITHUB_ENV
+          echo "DBT_KEYFILE_QA=/tmp/keyfile.json" >> $GITHUB_ENV
+
+         
           echo "DBT_GCP_PROJECT_PROD=${{ secrets.DBT_GCP_PROJECT_PROD }}" >> $GITHUB_ENV
+          echo "DBT_KEYFILE_PROD=/tmp/keyfile.json" >> $GITHUB_ENV
+
           echo "DBT_THREADS_QA=4" >> $GITHUB_ENV
           echo "DBT_THREADS_PROD=8" >> $GITHUB_ENV
 
