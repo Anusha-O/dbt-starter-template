@@ -276,7 +276,6 @@ Expected:
 
 ```bash
 sqlfluff lint models/
-sqlfluff fix models/
 ```
 
 Rules enforced:
