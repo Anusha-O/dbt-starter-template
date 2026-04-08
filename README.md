@@ -238,6 +238,7 @@ Add the following:
 #### Pull Request → dev
 
 ```bash
+# Create a feature branch (example)
 git checkout -b feature/test-ci
 git add .
 git commit -m "Test CI"
