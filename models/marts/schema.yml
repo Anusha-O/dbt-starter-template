@@ -1,9 +1,127 @@
+# -------------------------------------------------------
+# Marts Schema Configuration (Template)
+# -------------------------------------------------------
+# File name: schema.yml
+#
+# This file defines strict validation for final mart models
+#
+# Naming convention:
+# - fct_<entity>.sql  → facts (transactional data)
+# - dim_<entity>.sql  → dimensions (descriptive data)
+#
+# How to use:
+# 1. Replace model names with actual mart models
+# 2. Add all columns present in your model
+# 3. Keep severity: error → marts is the final quality gate
+# 4. Audit columns are handled by macro package
+#
+# Note:
+# - Marts layer is BI-facing → strict validation required
+# - Use 'error' severity → fail pipeline on data issues
+# - Audit columns (_loaded_at, _source_system, _dbt_model)
+#   are added via macro but must still be documented and tested here
+# -------------------------------------------------------
+
 version: 2
 
 models:
-  - name: mart_sample
+
+  # -------------------------
+  # Fact Model
+  # -------------------------
+  - name: fct_your_entity
+    description: "Fact table for business metrics"
+
     columns:
-      - name: id
+
+      - name: primary_key_column
+        description: "Unique identifier for this model"
         tests:
-          - not_null
-          - unique
+          - unique:
+              severity: error
+          - not_null:
+              severity: error
+
+      - name: referencing_column
+        description: "References primary_key_column in dim_your_entity"
+        tests:
+          - not_null:
+              severity: error
+
+      - name: metric_column
+        description: "Business metric"
+
+        # Optional tests (add only if meaningful)
+        # tests:
+        #   - dbt_utils.expression_is_true:
+        #       arguments:
+        #         expression: ">= 0"
+        #       severity: error
+
+      # -------------------------
+      # Audit Columns (MANDATORY)
+      # -------------------------
+      - name: _loaded_at
+        description: "Timestamp when row was loaded"
+        tests:
+          - not_null:
+              severity: error
+
+      - name: _source_system
+        description: "Source system identifier"
+        tests:
+          - not_null:
+              severity: error
+
+      - name: _dbt_model
+        description: "dbt model name"
+        tests:
+          - not_null:
+              severity: error
+
+  # -------------------------
+  # Dimension Model
+  # -------------------------
+  - name: dim_your_entity
+    description: "Dimension table for descriptive attributes"
+
+    columns:
+
+      - name: primary_key_column
+        description: "Unique identifier for this model"
+        tests:
+          - unique:
+              severity: error
+          - not_null:
+              severity: error
+
+      - name: attribute_column
+        description: "Descriptive attribute"
+
+        # Optional tests (add only if meaningful)
+        # tests:
+        #   - accepted_values:
+        #       arguments:
+        #         values: ['value_1', 'value_2']
+        #       severity: error
+
+      # -------------------------
+      # Audit Columns (MANDATORY)
+      # -------------------------
+      - name: _loaded_at
+        description: "Timestamp when row was loaded"
+        tests:
+          - not_null:
+              severity: error
+
+      - name: _source_system
+        description: "Source system identifier"
+        tests:
+          - not_null:
+              severity: error
+
+      - name: _dbt_model
+        description: "dbt model name"
+        tests:
+          - not_null:
+              severity: error

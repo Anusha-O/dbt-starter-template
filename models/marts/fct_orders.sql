@@ -12,6 +12,7 @@
 -- One row per order
 -- -------------------------------------------------------
 {{ config(enabled=false) }}
+
 WITH base AS (
 
     -- Select only required columns from intermediate model
@@ -27,7 +28,12 @@ WITH base AS (
 )
 
 SELECT
-    base.*
+    order_id,
+    customer_id,
+    order_amount,
+    tax_amount,
+    total_amount,
+    created_at
 
     -- Audit columns (generated via macro — do NOT hardcode)
     , {{ audit_columns('shopify') }}

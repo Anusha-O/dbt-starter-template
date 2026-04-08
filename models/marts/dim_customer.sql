@@ -12,6 +12,7 @@
 -- One row per customer
 -- -------------------------------------------------------
 {{ config(enabled=false) }}
+
 WITH base AS (
 
     -- Select required columns (directly from staging — no intermediate needed for simple dimensions)
@@ -26,7 +27,12 @@ WITH base AS (
 )
 
 SELECT
-    base.*
+    customer_id,
+    name,
+    email,
+    customer_created_at,
+    updated_at
+
     -- Audit columns (generated via macro — do NOT hardcode)
     , {{ audit_columns('shopify') }}
 
