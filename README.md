@@ -204,6 +204,7 @@ However, after cloning, you must configure it in your own repository.
 ### 1. Create Your Own Repository
 
 ```bash
+# Replace remote with your own repository
 git remote remove origin
 git remote add origin <your-repo-url>
 git push -u origin main
