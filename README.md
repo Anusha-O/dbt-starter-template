@@ -10,15 +10,8 @@ It includes:
 * Multi-environment setup (dev / qa / prod)
 * CI/CD pipeline with GitHub Actions
 * SQL quality checks using SQLFluff
-<<<<<<< HEAD
-* Seed-based demo models for instant validation
 
-# Goal: **Clone → Setup → Run → Works immediately**
-=======
-* Example models and structure for custom data implementation
-
-**Goal:** Clone → Configure → Run → Works successfully
->>>>>>> main
+*Goal:** Clone → Configure → Run → Works successfully
 
 ---
 
