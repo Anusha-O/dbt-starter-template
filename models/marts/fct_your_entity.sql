@@ -25,7 +25,6 @@
 
 WITH base AS (
 
-    -- Select only required columns from intermediate model
     SELECT
         primary_key_column,
         referencing_column,
@@ -37,11 +36,12 @@ WITH base AS (
 )
 
 SELECT
-    base.*
+    primary_key_column,
+    referencing_column,
+    column_1,
+    column_2,
+    metric_column
 
-    -- Audit columns (generated via macro — do NOT hardcode)
     , {{ audit_columns('your_source') }}
 
 FROM base
-
--- Optional: filter invalid records

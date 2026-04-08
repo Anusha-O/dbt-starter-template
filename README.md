@@ -10,9 +10,9 @@ It includes:
 * Multi-environment setup (dev / qa / prod)
 * CI/CD pipeline with GitHub Actions
 * SQL quality checks using SQLFluff
-* Seed-based demo models for instant validation
+* Example models and structure for custom data implementation
 
-# Goal: **Clone → Setup → Run → Works immediately**
+**Goal:** Clone → Configure → Run → Works successfully
 
 ---
 
@@ -33,7 +33,7 @@ models/
   staging/
   intermediate/
   marts/
-seeds/
+seeds/ (optional)
 macros/
 snapshots/
 analyses/
@@ -126,23 +126,17 @@ source load_env.sh
 
 ## First Run (Important)
 
-Run the following:
-
 ```bash
 dbt debug --target dev
 dbt deps
-dbt seed
 dbt build --target dev
 ```
 
 ### Expected Result
 
 * Connection successful
-* Seed data loaded
-* Models created
-* Tests passing
-
-If this works, your setup is correct 
+* Models run successfully (based on user configuration)
+* No errors during execution
 
 ---
 
@@ -164,17 +158,22 @@ dbt build --target qa
 
 ## Branching Strategy
 
-| Branch    | Purpose     |
-| --------- | ----------- |
-| feature/* | Development |
-| dev       | Integration |
-| main      | Production  |
+| Branch         | Purpose                    |
+| -------------- | -------------------------- |
+| feature/*      | Development                |
+| dev            | Integration                |
+| main           | Stable / Production        |
+| clean-template | Clean template for sharing |
 
 Flow:
 
 ```
 feature → dev → main
 ```
+
+**Note:**
+The `clean-template` branch is a simplified version intended for peer review and reuse.
+It is not part of the CI/CD workflow.
 
 ---
 
@@ -195,17 +194,83 @@ feature → dev → main
 
 ---
 
+## Git & CI/CD Setup Guide
+
+This template includes a GitHub Actions pipeline for CI/CD.
+However, after cloning, you must configure it in your own repository.
+
+---
+
+### 1. Create Your Own Repository
+
+```bash
+git remote remove origin
+git remote add origin <your-repo-url>
+git push -u origin main
+```
+
+---
+
+### 2. Enable GitHub Actions
+
+* Go to your repository → **Actions tab**
+* Enable workflows if prompted
+
+---
+
+### 3. Configure Secrets
+
+Go to:
+
+Settings → Secrets and Variables → Actions
+
+Add the following:
+
+* DBT_KEYFILE_JSON
+* DBT_GCP_PROJECT_QA
+* DBT_GCP_PROJECT_PROD
+* DBT_MANIFEST_BUCKET (optional)
+
+---
+
+### 4. Verify CI/CD
+
+#### Pull Request → dev
+
+```bash
+git checkout -b feature/test-ci
+git add .
+git commit -m "Test CI"
+git push origin feature/test-ci
+```
+
+Create PR → dev
+
+Expected:
+
+* SQLFluff runs
+* dbt debug runs
+* Slim CI executes
+
+---
+
+#### Merge → main
+
+Expected:
+
+* Full dbt build runs
+
+---
+
 ### Notes
 
-* Uses **seed-based demo data** (no external dependencies)
-* Source freshness is disabled by default
-* Manifest storage (GCS) is optional and disabled
+* CI/CD requires project-specific configuration
+* Without secrets, workflows will fail
+* This setup mirrors real-world production pipelines
 
 ---
 
 ## SQL Linting (SQLFluff)
-
-Run locally:
 
 ```bash
 sqlfluff lint models/
@@ -221,8 +286,6 @@ Rules enforced:
 ---
 
 ## Governance
-
-Run checks:
 
 ```bash
 dbt build --select package:dbt_project_evaluator
@@ -248,19 +311,19 @@ dbt build
 
 This template is designed to be:
 
-* **Self-contained** → no external data required
-* **Zero-setup** → works immediately after cloning
-* **Production-ready** → supports CI/CD and environments
-* **Extensible** → advanced features can be enabled later
+* Self-contained
+* Quick to set up
+* Production-ready
+* Extensible
 
 ---
 
 ## Optional Advanced Features
 
-These are disabled by default but can be enabled:
+These can be enabled as needed:
 
-* Source freshness checks (for real data sources)
-* Manifest storage (for advanced Slim CI)
+* Source freshness checks
+* Manifest storage for Slim CI
 * External data sources
 
 ---
@@ -276,4 +339,4 @@ These are disabled by default but can be enabled:
 
 ## Summary
 
-A clean, scalable, and production-ready dbt template that works out of the box and can be extended for enterprise use.
+A clean, scalable, and production-ready dbt template that can be configured and extended for real-world data workflows.

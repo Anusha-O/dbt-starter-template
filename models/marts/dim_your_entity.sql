@@ -40,11 +40,14 @@ WITH base AS (
 )
 
 SELECT
-    base.*
+    primary_key_column,
+
+    -- Descriptive attributes
+    attribute_column_1,
+    attribute_column_2,
+    attribute_column_3
 
     -- Audit columns (generated via macro — do NOT hardcode)
     , {{ audit_columns('your_source') }}
 
 FROM base
-
--- Optional: filter invalid records
