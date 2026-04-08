@@ -10,8 +10,9 @@ It includes:
 * Multi-environment setup (dev / qa / prod)
 * CI/CD pipeline with GitHub Actions
 * SQL quality checks using SQLFluff
+* Example models and structure for custom data implementation
 
-*Goal:** Clone → Configure → Run → Works successfully
+**Goal:** Clone → Configure → Run → Works successfully
 
 ---
 
@@ -32,11 +33,7 @@ models/
   staging/
   intermediate/
   marts/
-<<<<<<< HEAD
-seeds/
-=======
 seeds/ (optional)
->>>>>>> main
 macros/
 snapshots/
 analyses/
@@ -129,34 +126,17 @@ source load_env.sh
 
 ## First Run (Important)
 
-<<<<<<< HEAD
-Run the following:
-
 ```bash
 dbt debug --target dev
 dbt deps
-dbt seed
-=======
-```bash
-dbt debug --target dev
-dbt deps
->>>>>>> main
 dbt build --target dev
 ```
 
 ### Expected Result
 
 * Connection successful
-<<<<<<< HEAD
-* Seed data loaded
-* Models created
-* Tests passing
-
-If this works, your setup is correct 
-=======
 * Models run successfully (based on user configuration)
 * No errors during execution
->>>>>>> main
 
 ---
 
@@ -178,19 +158,6 @@ dbt build --target qa
 
 ## Branching Strategy
 
-<<<<<<< HEAD
-| Branch    | Purpose     |
-| --------- | ----------- |
-| feature/* | Development |
-| dev       | Integration |
-| main      | Production  |
-
-Flow:
-
-```
-feature → dev → main
-```
-=======
 | Branch         | Purpose                    |
 | -------------- | -------------------------- |
 | feature/*      | Development                |
@@ -207,7 +174,6 @@ feature → dev → main
 **Note:**
 The `clean-template` branch is a simplified version intended for peer review and reuse.
 It is not part of the CI/CD workflow.
->>>>>>> main
 
 ---
 
@@ -228,13 +194,6 @@ It is not part of the CI/CD workflow.
 
 ---
 
-<<<<<<< HEAD
-### Notes
-
-* Uses **seed-based demo data** (no external dependencies)
-* Source freshness is disabled by default
-* Manifest storage (GCS) is optional and disabled
-=======
 ## Git & CI/CD Setup Guide
 
 This template includes a GitHub Actions pipeline for CI/CD.
@@ -308,17 +267,11 @@ Expected:
 * CI/CD requires project-specific configuration
 * Without secrets, workflows will fail
 * This setup mirrors real-world production pipelines
->>>>>>> main
 
 ---
 
 ## SQL Linting (SQLFluff)
 
-<<<<<<< HEAD
-Run locally:
-
-=======
->>>>>>> main
 ```bash
 sqlfluff lint models/
 sqlfluff fix models/
@@ -333,11 +286,6 @@ Rules enforced:
 ---
 
 ## Governance
-<<<<<<< HEAD
-
-Run checks:
-=======
->>>>>>> main
 
 ```bash
 dbt build --select package:dbt_project_evaluator
@@ -363,33 +311,19 @@ dbt build
 
 This template is designed to be:
 
-<<<<<<< HEAD
-* **Self-contained** → no external data required
-* **Zero-setup** → works immediately after cloning
-* **Production-ready** → supports CI/CD and environments
-* **Extensible** → advanced features can be enabled later
-=======
 * Self-contained
 * Quick to set up
 * Production-ready
 * Extensible
->>>>>>> main
 
 ---
 
 ## Optional Advanced Features
 
-<<<<<<< HEAD
-These are disabled by default but can be enabled:
-
-* Source freshness checks (for real data sources)
-* Manifest storage (for advanced Slim CI)
-=======
 These can be enabled as needed:
 
 * Source freshness checks
 * Manifest storage for Slim CI
->>>>>>> main
 * External data sources
 
 ---
@@ -405,8 +339,4 @@ These can be enabled as needed:
 
 ## Summary
 
-<<<<<<< HEAD
-A clean, scalable, and production-ready dbt template that works out of the box and can be extended for enterprise use.
-=======
 A clean, scalable, and production-ready dbt template that can be configured and extended for real-world data workflows.
->>>>>>> main
