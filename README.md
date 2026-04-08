@@ -208,6 +208,9 @@ However, after cloning, you must configure it in your own repository.
 git remote remove origin
 git remote add origin <your-repo-url>
 git push -u origin main
+#create development branch
+git checkout -b dev
+git push -u origin dev
 ```
 
 ---
